@@ -1,8 +1,9 @@
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>DTC Shop</title>
   <style>
     body {
@@ -10,17 +11,25 @@
       color: #eee;
       font-family: Arial, sans-serif;
     }
-    .container { display: flex; justify-content: space-between; padding: 20px; }
-    .products, .cart { border: 2px solid gold; padding: 15px; border-radius: 8px; }
-    .products { flex: 2; margin-right: 20px; }
+    .container { display: flex; justify-content: space-between; padding: 10px; }
+    .products, .cart { border: 2px solid gold; padding: 10px; border-radius: 8px; }
+    .products { flex: 2; margin-right: 10px; }
     .cart { flex: 1; }
+
+    /* Kompakte Produktboxen */
     .product {
       border: 1px solid #444;
-      margin: 10px;
-      padding: 10px;
-      border-radius: 6px;
+      margin: 5px;
+      padding: 8px;
+      border-radius: 4px;
       background: #222;
+      cursor: pointer;
+      transition: background 0.2s;
     }
+    .product:hover {
+      background: #333;
+    }
+
     button {
       background: darkred;
       color: white;
@@ -31,16 +40,22 @@
       margin: 2px;
     }
     button:hover { background: red; }
+
     h2 { color: gold; }
     .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; border-bottom: 2px solid gold; }
     .category-buttons button { margin: 5px; }
-    #dtc { cursor: pointer; }
+    #dtc {
+      cursor: pointer; 
+      font-weight: bold; 
+      position: relative; 
+      padding: 4px 8px;
+    }
   </style>
 </head>
 <body>
   <div class="header">
     <h2>Bestelltyp:</h2>
-    <div id="dtc" onclick="copyDate()"></div>
+    <div id="dtc" onclick="copyFullOrder()"></div>
   </div>
 
   <div class="container" id="shop-section">
@@ -55,7 +70,7 @@
     <div class="cart">
       <h2>Warenkorb</h2>
       <ul id="cart-items"></ul>
-      <p><strong>Gesamtsumme: <span id="total">0</span>€</strong></p>
+      <p><strong>Gesamtsumme: <span id="total">0.00</span>€</strong></p>
       <button onclick="clearCart()">Warenkorb leeren</button>
     </div>
   </div>
@@ -116,17 +131,22 @@
       list.innerHTML = '';
       categories[currentCategory].forEach((p, i) => {
         list.innerHTML += `
-          <div class="product">
+          <div class="product" onclick="addProductToCart('${currentCategory}', ${i})">
             <h3>${p.name}</h3>
             <p>${p.desc || ''}</p>
             <p><strong>${p.price}€</strong></p>
-            <button onclick="addToCart('${currentCategory}', ${i})">In den Warenkorb</button>
           </div>`;
       });
     }
 
-    function addToCart(cat, i) {
-      cart.push(categories[cat][i]);
+    function addProductToCart(cat, i) {
+      const product = categories[cat][i];
+      const existing = cart.find(item => item.name === product.name);
+      if (existing) {
+        existing.count = (existing.count || 1) + 1;
+      } else {
+        cart.push({ ...product, count: 1 });
+      }
       renderCart();
     }
 
@@ -135,14 +155,21 @@
       items.innerHTML = '';
       let total = 0;
       cart.forEach((item, index) => {
-        items.innerHTML += `<li>${item.name} - ${item.price}€ <button onclick="removeFromCart(${index})">❌</button></li>`;
-        total += item.price;
+        const countDisplay = item.count > 1 ? ` x${item.count}` : '';
+        items.innerHTML += `<li>${item.name}${countDisplay} - ${item.price}€ 
+          <button onclick="removeFromCart(${index})">❌</button></li>`;
+        total += item.price * (item.count || 1);
       });
-      document.getElementById('total').innerText = total;
+      document.getElementById('total').innerText = total.toFixed(2);
     }
 
     function removeFromCart(index) {
-      cart.splice(index, 1);
+      const item = cart[index];
+      if (item.count && item.count > 1) {
+        item.count--;
+      } else {
+        cart.splice(index, 1);
+      }
       renderCart();
     }
 
@@ -155,25 +182,79 @@
       const now = new Date();
       const formatted = now.toLocaleDateString('de-DE');
       currentDate = formatted;
-      document.getElementById('dtc').innerText = `DTC | ${formatted}`;
+
+      // Kategorien im Warenkorb filtern
+      const categoriesInCart = [...new Set(cart.map(item => {
+        for (const cat in categories) {
+          if (categories[cat].some(p => p.name === item.name)) return cat;
+        }
+        return '';
+      }))];
+
+      // Gruppierung 'Eclat de Lune' & 'Spirituosen' -> 'Getränke'
+      const groupMap = {
+        "Eclat de Lune": "Getränke",
+        "Spirituosen": "Getränke"
+      };
+
+      const categoriesForString = categoriesInCart.map(cat => {
+        if (groupMap[cat]) {
+          return groupMap[cat];
+        }
+        return cat;
+      });
+
+      const categoriesUnique = Array.from(new Set(categoriesForString)).sort();
+
+      const categoryPart = categoriesUnique.join(" / ");
+
+      // Tooltip-Text
+      const tooltipText = `DTC | ${formatted}${categoryPart ? '/' + categoryPart : ''}`;
+
+      // Datum und Tooltip im Element aktualisieren
+      const dtcDiv = document.getElementById('dtc');
+      dtcDiv.innerText = `DTC | ${formatted}`;
+      dtcDiv.setAttribute('title', tooltipText);
     }
 
-    async function copyDate() {
-      if(currentDate) {
-        try {
-          await navigator.clipboard.writeText(currentDate);
-          alert("Datum kopiert: " + currentDate);
-        } catch (err) {
-          alert("Konnte nicht in die Zwischenablage kopieren.");
+    // Funktion zum Kopieren
+    async function copyFullOrder() {
+      const categoriesInCart = [...new Set(cart.map(item => {
+        for (const cat in categories) {
+          if (categories[cat].some(p => p.name === item.name)) return cat;
         }
+        return '';
+      }))];
+
+      const groupMap = {
+        "Eclat de Lune": "Getränke",
+        "Spirituosen": "Getränke"
+      };
+
+      const categoriesForString = categoriesInCart.map(cat => {
+        if (groupMap[cat]) {
+          return groupMap[cat];
+        }
+        return cat;
+      });
+
+      const categoriesUnique = Array.from(new Set(categoriesForString)).sort();
+
+      const categoryPart = categoriesUnique.join(" / ");
+      const fullString = `DTC | ${currentDate}` + (categoryPart ? " / " + categoryPart : "");
+
+      try {
+        await navigator.clipboard.writeText(fullString);
+      } catch(e) {
+        console.error('Fehler beim Kopieren', e);
       }
     }
 
-    // Initialize after page loads
-    window.addEventListener('DOMContentLoaded', function() {
+    // Initialisierung
+    window.addEventListener('DOMContentLoaded', () => {
       renderCategories();
       setCategory(Object.keys(categories)[0]);
-      setDate();
+      setDate(); // Datum setzen und Tooltip aktualisieren
     });
   </script>
 </body>
