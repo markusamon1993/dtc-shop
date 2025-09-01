@@ -3,58 +3,91 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>DTC Shop</title>
+  <title>Daddy Tabacco Preisrechner</title>
   <style>
     body {
-      background: #111;
-      color: #eee;
+      background: #0b0b0b;
+      color: #ddd;
       font-family: Arial, sans-serif;
+      margin: 0;
     }
-    .container { display: flex; justify-content: space-between; padding: 10px; }
-    .products, .cart { border: 2px solid gold; padding: 10px; border-radius: 8px; }
-    .products { flex: 2; margin-right: 10px; }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+      border-bottom: 2px solid gold;
+      background: #111;
+    }
+    .header h2 { color: gold; margin: 0; font-size: 22px; }
+    #dtc { cursor: pointer; font-weight: bold; font-size: 14px; color: #fff; }
+    #dtc:hover { color: gold; }
+
+    .container {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px;
+    }
+
+    .products, .cart {
+      border: 2px solid gold;
+      border-radius: 8px;
+      padding: 16px;
+      background: #141414;
+      box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+    }
+    .products { flex: 2; }
     .cart { flex: 1; }
 
-    /* Kompakte Produktboxen */
+    h2 { color: gold; font-size: 20px; margin-bottom: 12px; }
+
+    .category-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+    .category-buttons button {
+      background: #111;
+      border: 1px solid red;
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .category-buttons button:hover { background: red; }
+
+    #product-list { 
+      display: grid; 
+      grid-template-columns: repeat(2, minmax(240px, 1fr)); 
+      gap: 12px; 
+    }
+
     .product {
-      border: 1px solid #444;
-      margin: 5px;
-      padding: 8px;
-      border-radius: 4px;
-      background: #222;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 12px;
+      background: linear-gradient(145deg, #111, #1a1a1a);
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-sizing: border-box;
       cursor: pointer;
-      transition: background 0.2s;
     }
-    .product:hover {
-      background: #333;
-    }
+    .product:hover { transform: translateY(-2px); box-shadow: 0 0 8px red; }
+    .product h3 { margin: 0; font-size: 16px; color: #fff; }
+    .product p { margin: 4px 0; font-size: 13px; color: #bbb; }
+    .product strong { color: gold; font-size: 14px; }
 
-    button {
-      background: darkred;
-      color: white;
-      border: none;
-      padding: 6px 10px;
-      cursor: pointer;
-      border-radius: 5px;
-      margin: 2px;
-    }
-    button:hover { background: red; }
-
-    h2 { color: gold; }
-    .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; border-bottom: 2px solid gold; }
-    .category-buttons button { margin: 5px; }
-    #dtc {
-      cursor: pointer; 
-      font-weight: bold; 
-      position: relative; 
-      padding: 4px 8px;
-    }
+    ul { padding-left: 16px; margin: 0; font-size: 14px; }
+    li { margin: 6px 0; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .cart strong { color: gold; }
+    .cart button { background: darkred; padding: 4px 8px; border-radius: 6px; color: #fff; border: none; cursor: pointer; }
+    .cart button:hover { background: red; }
+    .quantity-controls { display: flex; align-items: center; gap: 4px; }
+    .quantity-controls button { padding: 2px 6px; font-size: 12px; }
+    .item-info { flex: 1; color: white; }
   </style>
 </head>
 <body>
   <div class="header">
     <h2>Daddy Tabacco Preisrechner</h2>
-    <div id="dtc" onclick="copyFullOrder()">Hier klicken für vollständigen Rechnungstext</div>
+    <div id="dtc" onclick="copyFullOrder()">Hier Klicken um Rechnungstext zu kopieren</div>
   </div>
 
   <div class="container" id="shop-section">
@@ -69,7 +102,7 @@
     <div class="cart">
       <h2>Warenkorb</h2>
       <ul id="cart-items"></ul>
-      <p><strong>Gesamtsumme: <span id="total">0.00</span>€</strong></p>
+      <p><strong>Gesamt: <span id="total">0.00</span>$</strong></p>
       <button onclick="clearCart()">Warenkorb leeren</button>
     </div>
   </div>
@@ -81,10 +114,10 @@
 
     const categories = {
       "Zigaretten": [
-        { name: "Redwood", price: 300, desc: "Premium Zigaretten" },
-        { name: "Ember Classic Gold", price: 700, desc: "Goldene Qualität" },
-        { name: "Ember Classic Red", price: 400, desc: "Klassisch rot" },
-        { name: "Ember Peppermint", price: 800, desc: "Mit Pfefferminz" }
+        { name: "Redwood", price: 300, desc: "Klassischer Geschmack für den anspruchsvollen Raucher" },
+        { name: "Ember Classic Gold", price: 700, desc: "Luxuriöse Komposition mit goldener Filterung" },
+        { name: "Ember Classic Red", price: 400, desc: "Kräftiger Geschmack" },
+        { name: "Ember Peppermint", price: 800, desc: "Erfrischende Pfefferminznote" }
       ],
       "Zigarren": [
         { name: "Atztec Gold", price: 3500, desc: "Luxus Zigarre" },
@@ -133,7 +166,7 @@
           <div class="product" onclick="addProductToCart('${currentCategory}', ${i})">
             <h3>${p.name}</h3>
             <p>${p.desc || ''}</p>
-            <p><strong>${p.price}€</strong></p>
+            <p><strong>${p.price}$</strong></p>
           </div>`;
       });
     }
@@ -154,21 +187,31 @@
       items.innerHTML = '';
       let total = 0;
       cart.forEach((item, index) => {
-        const countDisplay = item.count > 1 ? ` x${item.count}` : '';
-        items.innerHTML += `<li>${item.name}${countDisplay} - ${item.price}€ 
-          <button onclick="removeFromCart(${index})">❌</button></li>`;
-        total += item.price * (item.count || 1);
+        const subtotal = item.price * (item.count || 1);
+        items.innerHTML += `<li>
+          <div class="item-info">${item.name} - ${item.price}$ x ${item.count} = <strong>${subtotal}$</strong></div>
+          <div class="quantity-controls">
+            <button onclick="decreaseQuantity(${index})">-</button>
+            <button onclick="increaseQuantity(${index})">+</button>
+          </div>
+        </li>`;
+        total += subtotal;
       });
       document.getElementById('total').innerText = total.toFixed(2);
     }
 
-    function removeFromCart(index) {
+    function decreaseQuantity(index) {
       const item = cart[index];
-      if (item.count && item.count > 1) {
+      if (item.count > 1) {
         item.count--;
       } else {
         cart.splice(index, 1);
       }
+      renderCart();
+    }
+
+    function increaseQuantity(index) {
+      cart[index].count++;
       renderCart();
     }
 
@@ -181,47 +224,11 @@
       const now = new Date();
       const formatted = now.toLocaleDateString('de-DE');
       currentDate = formatted;
-
-      // Kategorien im Warenkorb filtern
-      const categoriesInCart = [...new Set(cart.map(item => {
-        for (const cat in categories) {
-          if (categories[cat].some(p => p.name === item.name)) return cat;
-        }
-        return '';
-      }))];
-
-      // Gruppierung 'Eclat de Lune' & 'Spirituosen' -> 'Getränke'
-      const groupMap = {
-        "Eclat de Lune": "Getränke",
-        "Spirituosen": "Getränke"
-      };
-
-      const categoriesForString = categoriesInCart.map(cat => {
-        if (groupMap[cat]) {
-          return groupMap[cat];
-        }
-        return cat;
-      });
-
-      const categoriesUnique = Array.from(new Set(categoriesForString)).sort();
-
-      const categoryPart = categoriesUnique.join(" / ");
-
-      // Vollständiger Text, der im Clipboard landet
-      const fullText = `DTC | ${formatted}${categoryPart ? '/' + categoryPart : ''}`;
-
-      // Tooltip-Text: zeigt beim Hover den vollständigen Text
-      const tooltipText = fullText;
-
-      // Datum und vollständiger Text im Element aktualisieren
-      const dtcDiv = document.getElementById('dtc');
-      dtcDiv.innerText = `Hier klicken für vollständigen Rechnungstext`;
-      dtcDiv.setAttribute('title', tooltipText);
-      dtcDiv.dataset.fullText = fullText; // für Hover
     }
 
-    // Funktion zum Kopieren
     async function copyFullOrder() {
+      setDate(); // Datum beim Klick aktualisieren
+
       const categoriesInCart = [...new Set(cart.map(item => {
         for (const cat in categories) {
           if (categories[cat].some(p => p.name === item.name)) return cat;
@@ -229,47 +236,23 @@
         return '';
       }))];
 
-      const groupMap = {
-        "Eclat de Lune": "Getränke",
-        "Spirituosen": "Getränke"
-      };
-
-      const categoriesForString = categoriesInCart.map(cat => {
-        if (groupMap[cat]) {
-          return groupMap[cat];
-        }
-        return cat;
-      });
-
+      const groupMap = { 'Eclat de Lune': 'Getränke', 'Spirituosen': 'Getränke' };
+      const categoriesForString = categoriesInCart.map(cat => groupMap[cat] || cat);
       const categoriesUnique = Array.from(new Set(categoriesForString)).sort();
+      const categoryPart = categoriesUnique.join(' | ');
+      const fullString = `DTC | ${currentDate}` + (categoryPart ? ' | ' + categoryPart : '');
 
-      const categoryPart = categoriesUnique.join(" / ");
-      const fullString = `DTC | ${currentDate}` + (categoryPart ? " / " + categoryPart : "");
-
-      try {
-        await navigator.clipboard.writeText(fullString);
-      } catch(e) {
-        console.error('Fehler beim Kopieren', e);
+      try { 
+        await navigator.clipboard.writeText(fullString); 
+      } catch(e) { 
+        console.error('Fehler beim Kopieren', e); 
       }
     }
 
-    // Beim Hover: Tooltip auf vollständigen Text setzen
-    document.getElementById('dtc').addEventListener('mouseenter', () => {
-      const fullText = document.getElementById('dtc').dataset.fullText;
-      if (fullText) {
-        document.getElementById('dtc').setAttribute('title', fullText);
-      }
-    });
-    // Beim Mouseleave: Tooltip wieder auf Hinweis setzen
-    document.getElementById('dtc').addEventListener('mouseleave', () => {
-      document.getElementById('dtc').setAttribute('title', 'Hier klicken für vollständigen Rechnungstext');
-    });
-
-    // Initialisieren
     window.addEventListener('DOMContentLoaded', () => {
       renderCategories();
       setCategory(Object.keys(categories)[0]);
-      setDate(); // Datum setzen und Tooltip vorbereiten
+      // setDate(); // Optional: initial Datum setzen
     });
   </script>
 </body>
