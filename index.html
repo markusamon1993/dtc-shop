@@ -36,51 +36,65 @@
     .category-buttons button { margin: 5px; }
     #dtc { cursor: pointer; }
   </style>
+</head>
+<body>
+  <div class="header">
+    <h2>Bestelltyp:</h2>
+    <div id="dtc" onclick="copyDate()"></div>
+  </div>
+
+  <div class="container" id="shop-section">
+    <!-- Produkte -->
+    <div class="products">
+      <h2 id="category-title">Produkte</h2>
+      <div class="category-buttons" id="category-buttons"></div>
+      <div id="product-list"></div>
+    </div>
+
+    <!-- Warenkorb -->
+    <div class="cart">
+      <h2>Warenkorb</h2>
+      <ul id="cart-items"></ul>
+      <p><strong>Gesamtsumme: <span id="total">0</span>€</strong></p>
+      <button onclick="clearCart()">Warenkorb leeren</button>
+    </div>
+  </div>
+
   <script>
     let cart = [];
     let currentCategory = "";
     let currentDate = "";
 
-    // HIER PRODUKTE UND KATEGORIEN EINTRAGEN
-    // ========================================
-    // Beispiel:
-    // "Kategorie-Name": [
-    //   { name: "Produktname", price: 123, desc: "Beschreibung" },
-    //   { name: "Anderes Produkt", price: 456, desc: "Beschreibung" }
-    // ]
-    // ========================================
-
     const categories = {
       "Zigaretten": [
-        { name: "Redwood", price: 300, },
-        { name: "Ember Classic Gold", price: 700, },
-        { name: "Ember Classic Red", price: 400, },
-        { name: "Ember Peppermint", price: 800, }
+        { name: "Redwood", price: 300, desc: "Premium Zigaretten" },
+        { name: "Ember Classic Gold", price: 700, desc: "Goldene Qualität" },
+        { name: "Ember Classic Red", price: 400, desc: "Klassisch rot" },
+        { name: "Ember Peppermint", price: 800, desc: "Mit Pfefferminz" }
       ],
-       "Zigarren": [
-        { name: "Atztec Gold", price: 3500, },
-        { name: "Isla del Diabolo", price: 4000, },
-        { name: "El Tropical", price: 5000, },
-        { name: "Los Santos Vice", price: 5000, },
-        { name: "El Patron", price: 6000, }
+      "Zigarren": [
+        { name: "Atztec Gold", price: 3500, desc: "Luxus Zigarre" },
+        { name: "Isla del Diabolo", price: 4000, desc: "Exotische Mischung" },
+        { name: "El Tropical", price: 5000, desc: "Tropisches Aroma" },
+        { name: "Los Santos Vice", price: 5000, desc: "Premium Qualität" },
+        { name: "El Patron", price: 6000, desc: "Die Beste" }
       ],
       "Eclat de Lune": [
-        { name: "Eclat de Lune Glas", price: 450, },
-        { name: "Eclat de Lune 0,7L", price: 750, },
-        { name: "Eclat de Lune 1L", price: 1000, },
-        { name: "Eclat de Lune 6L", price: 6000, },
-        { name: "Eclat de Lune 15L", price: 15000, }
+        { name: "Eclat de Lune Glas", price: 450, desc: "Im Glas" },
+        { name: "Eclat de Lune 0,7L", price: 750, desc: "0,7 Liter Flasche" },
+        { name: "Eclat de Lune 1L", price: 1000, desc: "1 Liter Flasche" },
+        { name: "Eclat de Lune 6L", price: 6000, desc: "6 Liter Flasche" },
+        { name: "Eclat de Lune 15L", price: 15000, desc: "15 Liter Flasche" }
       ],
-       "Spirituosen": [
-        { name: "Calipso Oro Visky", price: 1000, },
-        { name: "Daddy Brandy", price: 1000, },
-        { name: "Daddy Vodka", price: 1000, }
+      "Spirituosen": [
+        { name: "Calipso Oro Visky", price: 1000, desc: "Premium Whisky" },
+        { name: "Daddy Brandy", price: 1000, desc: "Feiner Brandy" },
+        { name: "Daddy Vodka", price: 1000, desc: "Klarer Vodka" }
       ],
-       "Extras": [
-        { name: "Daddy's Zippo", price: 400, },
-        { name: "Daddy Tabacco Gutschein", price: 6000, }
-      ],
-      
+      "Extras": [
+        { name: "Daddy's Zippo", price: 400, desc: "Hochwertiges Feuerzeug" },
+        { name: "Daddy Tabacco Gutschein", price: 6000, desc: "Geschenkgutschein" }
+      ]
     };
 
     function renderCategories() {
@@ -104,7 +118,7 @@
         list.innerHTML += `
           <div class="product">
             <h3>${p.name}</h3>
-            <p>${p.desc}</p>
+            <p>${p.desc || ''}</p>
             <p><strong>${p.price}€</strong></p>
             <button onclick="addToCart('${currentCategory}', ${i})">In den Warenkorb</button>
           </div>`;
@@ -155,34 +169,12 @@
       }
     }
 
-    renderCategories();
-    setCategory(Object.keys(categories)[0]);
-    setDate();
+    // Initialize after page loads
+    window.addEventListener('DOMContentLoaded', function() {
+      renderCategories();
+      setCategory(Object.keys(categories)[0]);
+      setDate();
+    });
   </script>
-</head>
-<body>
-  <div class="header">
-    <h2>Bestelltyp:</h2>
-    <div id="dtc" onclick="copyDate()"></div>
-  </div>
-
-  <div class="container" id="shop-section">
-    <!-- Produkte -->
-    <div class="products">
-      <h2 id="category-title">Produkte</h2>
-      <div class="category-buttons" id="category-buttons"></div>
-      <div id="product-list"></div>
-    </div>
-
-    <!-- Warenkorb -->
-    <div class="cart">
-      <h2>Warenkorb</h2>
-      <ul id="cart-items"></ul>
-      <p><strong>Gesamtsumme: <span id="total">0</span>€</strong></p>
-      <button onclick="clearCart()">Warenkorb leeren</button>
-    </div>
-  </div>
-
-  
 </body>
 </html>
