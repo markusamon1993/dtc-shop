@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -54,8 +53,8 @@
 </head>
 <body>
   <div class="header">
-    <h2>Bestelltyp:</h2>
-    <div id="dtc" onclick="copyFullOrder()"></div>
+    <h2>Daddy Tabacco Preisrechner</h2>
+    <div id="dtc" onclick="copyFullOrder()">Hier klicken für vollständigen Rechnungstext</div>
   </div>
 
   <div class="container" id="shop-section">
@@ -208,13 +207,17 @@
 
       const categoryPart = categoriesUnique.join(" / ");
 
-      // Tooltip-Text
-      const tooltipText = `DTC | ${formatted}${categoryPart ? '/' + categoryPart : ''}`;
+      // Vollständiger Text, der im Clipboard landet
+      const fullText = `DTC | ${formatted}${categoryPart ? '/' + categoryPart : ''}`;
 
-      // Datum und Tooltip im Element aktualisieren
+      // Tooltip-Text: zeigt beim Hover den vollständigen Text
+      const tooltipText = fullText;
+
+      // Datum und vollständiger Text im Element aktualisieren
       const dtcDiv = document.getElementById('dtc');
-      dtcDiv.innerText = `DTC | ${formatted}`;
+      dtcDiv.innerText = `Hier klicken für vollständigen Rechnungstext`;
       dtcDiv.setAttribute('title', tooltipText);
+      dtcDiv.dataset.fullText = fullText; // für Hover
     }
 
     // Funktion zum Kopieren
@@ -250,11 +253,23 @@
       }
     }
 
-    // Initialisierung
+    // Beim Hover: Tooltip auf vollständigen Text setzen
+    document.getElementById('dtc').addEventListener('mouseenter', () => {
+      const fullText = document.getElementById('dtc').dataset.fullText;
+      if (fullText) {
+        document.getElementById('dtc').setAttribute('title', fullText);
+      }
+    });
+    // Beim Mouseleave: Tooltip wieder auf Hinweis setzen
+    document.getElementById('dtc').addEventListener('mouseleave', () => {
+      document.getElementById('dtc').setAttribute('title', 'Hier klicken für vollständigen Rechnungstext');
+    });
+
+    // Initialisieren
     window.addEventListener('DOMContentLoaded', () => {
       renderCategories();
       setCategory(Object.keys(categories)[0]);
-      setDate(); // Datum setzen und Tooltip aktualisieren
+      setDate(); // Datum setzen und Tooltip vorbereiten
     });
   </script>
 </body>
