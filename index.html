@@ -52,16 +52,35 @@
 
     const categories = {
       "Zigaretten": [
-        { name: "Redwood", price: 300, desc: "Klassischer Geschmack" },
-        { name: "Ember Classic Gold", price: 700, desc: "Luxuriöse Komposition" },
-        { name: "Ember Classic Red", price: 400, desc: "Kräftiger Geschmack" },
-        { name: "Ember Peppermint", price: 800, desc: "Erfrischende Pfefferminznote" }
+        { name: "Redwood", price: 300, },
+        { name: "Ember Classic Gold", price: 700, },
+        { name: "Ember Classic Red", price: 400, },
+        { name: "Ember Peppermint", price: 800, }
       ],
-      "Getränke": [
-        { name: "Cola", price: 200, desc: "Erfrischend und süß" },
-        { name: "Wasser", price: 100, desc: "Still oder Sprudel" },
-        { name: "Saft", price: 250, desc: "Fruchtig frisch" }
-      ]
+       "Zigarren": [
+        { name: "Atztec Gold", price: 3500, },
+        { name: "Isla del Diabolo", price: 4000, },
+        { name: "El Tropical", price: 5000, },
+        { name: "Los Santos Vice", price: 5000, },
+        { name: "El Patron", price: 6000, }
+      ],
+      "Eclat de Lune": [
+        { name: "Eclat de Lune Glas", price: 450, },
+        { name: "Eclat de Lune 0,7L", price: 750, },
+        { name: "Eclat de Lune 1L", price: 1000, },
+        { name: "Eclat de Lune 6L", price: 6000, },
+        { name: "Eclat de Lune 15L", price: 15000, }
+      ],
+       "Spirituosen": [
+        { name: "Calipso Oro Visky", price: 1000, },
+        { name: "Daddy Brandy", price: 1000, },
+        { name: "Daddy Vodka", price: 1000, }
+      ],
+       "Extras": [
+        { name: "Daddy's Zippo", price: 400, },
+        { name: "Daddy Tabacco Gutschein", price: 6000, }
+      ],
+      
     };
 
     function renderCategories() {
@@ -164,14 +183,6 @@
     </div>
   </div>
 
-  <hr style="margin:40px 0; border-color: gold;">
-  <h2>📌 Vorlage für neue Kategorien & Produkte:</h2>
-  <pre style="background:#222; padding:15px; border-radius:6px; border:1px solid #555;">
-"Snacks": [
-  { name: "Chips Paprika", price: 180, desc: "Knusprig & würzig" },
-  { name: "Schokolade", price: 220, desc: "Süße Versuchung" }
-]
-  </pre>
-  <p>👉 Diesen Block einfach im <code>const categories = { ... }</code> Abschnitt einfügen.</p>
+  
 </body>
 </html>
